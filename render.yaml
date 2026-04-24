@@ -26,10 +26,8 @@ services:
     runtime: static
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
-    routes:
-      - type: rewrite
-        source: /api/*
-        destination: https://exhibitor-extraction-api.onrender.com/api/*
     envVars:
       - key: NODE_VERSION
         value: "20"
+      - key: VITE_API_URL
+        value: "https://exhibitor-extraction-api.onrender.com"

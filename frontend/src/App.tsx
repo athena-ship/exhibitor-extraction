@@ -43,6 +43,9 @@ interface JobStatus {
   error: string | null
 }
 
+// API base URL - use environment variable or default to relative path for dev
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
 function App() {
   const [pendingRequests, setPendingRequests] = useState<PendingRequest[]>([])
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set())
@@ -55,7 +58,7 @@ function App() {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch('/api/pending')
+      const response = await fetch(`${API_BASE}/api/pending`)
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
@@ -78,7 +81,7 @@ function App() {
 
     const poll = async () => {
       try {
-        const response = await fetch(`/api/status/${jobStatus.job_id}`)
+        const response = await fetch(`${API_BASE}/api/status/${jobStatus.job_id}`)
         if (response.ok) {
           const status: JobStatus = await response.json()
           setJobStatus(status)
@@ -122,7 +125,7 @@ function App() {
     if (selectedRows.size === 0) return
 
     try {
-      const response = await fetch('/api/process', {
+      const response = await fetch(`${API_BASE}/api/process`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ row_indices: Array.from(selectedRows) })
