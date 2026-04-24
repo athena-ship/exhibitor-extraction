@@ -1,0 +1,35 @@
+services:
+  # Backend API Service
+  - type: web
+    name: exhibitor-extraction-api
+    runtime: python
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: SEAMLESS_API_KEY
+        sync: false
+      - key: GOOGLE_SERVICE_ACCOUNT_EMAIL
+        sync: false
+      - key: GOOGLE_PRIVATE_KEY
+        sync: false
+      - key: DRIVE_OUTPUT_FOLDER
+        value: "17xvwirTNTfH5HmKmXIY7JYW_XoxJ1T-5"
+      - key: SHEET_ID
+        value: "1Yhamt9si8Hs64g0q4JVwlEyghXsgDUXT"
+    healthCheckPath: /
+
+  # Frontend Static Site
+  - type: web
+    name: exhibitor-extraction-ui
+    runtime: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://exhibitor-extraction-api.onrender.com/api/*
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
